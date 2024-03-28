@@ -4,7 +4,12 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
+///Imports
 const dbConnect = require("./Config/dbconnect");
+
+//Import different Route Files
+const registerRoutes = require("./Routes/registerRoutes");
+const loginRoutes = require("./Routes/loginRoutes");
 
 dbConnect();
 const app = express();
@@ -23,6 +28,10 @@ const PORT = process.env.PORT || 4000;
 app.get("/", (req, res) => {
   res.send("<h1>Welcome to the backend </h1>");
 });
+
+//different Routes configurations
+app.use("/api/register", registerRoutes);
+app.use("/api/login", loginRoutes);
 
 app.listen(PORT, console.log(`server listening on ${PORT}`));
 

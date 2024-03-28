@@ -1,6 +1,7 @@
 // name email phone Ca [clients] password
 
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const employeeModel = mongoose.Schema({
   employeeName: {
@@ -34,11 +35,24 @@ const employeeModel = mongoose.Schema({
   assignedClients: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref:"Client"
+      ref: "Client",
     },
   ],
 });
 
+employeeModel.methods.matchPassword = async function (enterredPassword) {
+  return await bcrypt.compare(enterredPassword, this.password);
+};
+
+employeeModel.pre("save", async function (next) {
+  if (!this.isModified) {
+    next();
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
 const employeeSchema = mongoose.model("Employee", employeeModel);
 
-module.exports = employeeSchema
+module.exports = employeeSchema;
